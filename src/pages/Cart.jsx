@@ -4,8 +4,12 @@ import Announcement from "../components/Announcement";
 import Footer from "../components/Footer";
 import Navbar from "../components/Navbar";
 import { mobile } from "../responsive";
-import React from 'react'
+import React, { useState } from 'react'
 import { useSelector } from "react-redux";
+import StripeCheckout from "react-stripe-checkout"; 
+
+
+const KEY = process.env.REACT_APP_STRIPE
 
 
 const Container = styled.div``;
@@ -158,6 +162,13 @@ const Button = styled.button`
 const Cart = () => {
 
   const cart = useSelector(state => state.cart)
+  const [stripeToken, setStripeToken] = useState(null)
+
+  const onToken = (token)=>{
+      setStripeToken(token)
+  };
+
+  console.log(stripeToken)
 
   return (
     <Container>
@@ -211,7 +222,7 @@ const Cart = () => {
             <SummaryTitle>ORDER SUMMARY</SummaryTitle>
             <SummaryItem>
               <SummaryItemText>Subtotal</SummaryItemText>
-              <SummaryItemPrice>$ 80</SummaryItemPrice>
+              <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Estimated Shipping</SummaryItemText>
@@ -223,9 +234,24 @@ const Cart = () => {
             </SummaryItem>
             <SummaryItem type="total">
               <SummaryItemText>Total</SummaryItemText>
-              <SummaryItemPrice>$ 80</SummaryItemPrice>
+              <SummaryItemPrice>$ {cart.total} </SummaryItemPrice>
             </SummaryItem>
+
+            <StripeCheckout  
+            name="moath shop"
+            image="https://i.ibb.co/DG69bQ4/2.png"
+            billingAddress
+            shippingAddress
+            description= {`your total is $${cart.total}`}
+            amount = {cart.total*100}
+            token = {onToken}
+            stripeKey = {KEY}
+            > 
+
             <Button>CHECKOUT NOW</Button>
+
+            </StripeCheckout>
+
           </Summary>
         </Bottom>
       </Wrapper>
